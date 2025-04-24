@@ -7,15 +7,12 @@ function round1(x) {
 }
 
 export default function ConfigForm({ config, onSave }) {
-  /* keep a local, editable copy of the config */
+
   const [localCfg, setLocalCfg] = useState(config);
   const [status,   setStatus]   = useState({ ok: '', err: '' });
 
-  /* if parent supplies a newer config later, sync it */
   useEffect(() => setLocalCfg(config), [config]);
 
-  /* ---------------------------------------------------- helpers */
-  /** mutate nested numeric property given "path.to.field" */
   const handleChange = (path, value) => {
     const num = Number(value);
     setLocalCfg(cfg => {
@@ -31,7 +28,6 @@ export default function ConfigForm({ config, onSave }) {
     setStatus({ ok: '', err: '' });
   };
 
-  /** build payload with 1-decimal rounding */
   const buildPayload = () => {
     const r = localCfg.acceptable_ranges;
     return {
@@ -47,14 +43,14 @@ export default function ConfigForm({ config, onSave }) {
     };
   };
 
-  /* ---------------------------------------------------- submit */
+
   const handleSubmit = e => {
     e.preventDefault();
     const payload = buildPayload();
 
     axios.put('/api/config', payload)
       .then(res => {
-        onSave(res.data);                  // notify parent immediately
+        onSave(res.data);                 
         setStatus({ ok: 'Saved!', err: '' });
       })
       .catch(() =>
@@ -104,9 +100,8 @@ export default function ConfigForm({ config, onSave }) {
         </label>
       </fieldset>
 
-      {/* ─────────── ranges ─────────── */}
       <fieldset style={{ marginTop: 24 }}>
-        <legend>Acceptable Ranges (rounded to 1 decimal)</legend>
+        <legend>Acceptable Ranges</legend>
 
         <div style={{ marginBottom: 12 }}>
           <strong>Temperature (°C):</strong><br/>
@@ -181,7 +176,6 @@ export default function ConfigForm({ config, onSave }) {
         </div>
       </fieldset>
 
-      {/* ─────────── feedback & submit ─────────── */}
       <button type="submit" style={{ marginTop: 16 }}>Save Configuration</button>
       {status.ok  && <p style={{ color: 'green' }}>{status.ok}</p>}
       {status.err && <p style={{ color: 'red'   }}>{status.err}</p>}

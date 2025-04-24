@@ -6,14 +6,12 @@ import {
   Tooltip, ResponsiveContainer, ReferenceArea
 } from 'recharts';
 
-/* metric definitions */
 const METRICS = [
-  { key: 'temperature', label: 'Temperature (°C)', color: '#ef4444' }, // red-500
-  { key: 'humidity',    label: 'Humidity (%)',     color: '#3b82f6' }, // blue-500
-  { key: 'light',       label: 'Light',            color: '#f59e0b' }  // amber-500
+  { key: 'temperature', label: 'Temperature (°C)', color: '#ef4444' }, 
+  { key: 'humidity',    label: 'Humidity (%)',     color: '#3b82f6' },
+  { key: 'light',       label: 'Light',            color: '#f59e0b' } 
 ];
 
-/* helper for formatting server readings */
 function fmt(rs) {
   return rs.map(r => ({
     time: new Date(r.timestamp).toLocaleTimeString(),
@@ -34,7 +32,6 @@ export default function MetricChart({ ranges }) {
       .catch(console.error);
   }, []);
 
-  /* live polling every 5 s */
   useEffect(() => {
     const id = setInterval(() => {
       axios.get('/api/readings?limit=1')
@@ -50,7 +47,7 @@ export default function MetricChart({ ranges }) {
     return () => clearInterval(id);
   }, []);
 
-  /* band + domain logic exactly as in the version you said worked */
+
   const band     = ranges?.[metric];
   const hasBand  = band && typeof band.min === 'number' && typeof band.max === 'number';
 
@@ -70,7 +67,7 @@ export default function MetricChart({ ranges }) {
 
   const meta = METRICS.find(m => m.key === metric);
 
-  /* ------------------------------- render */
+
   return (
     <section className="space-y-4">
       <label className="space-x-2 font-medium">

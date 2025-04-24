@@ -5,14 +5,13 @@ import MetricChart from './components/MetricChart';
 import ConfigForm  from './components/ConfigForm';
 
 export default function App() {
-  const [config, setConfig] = useState(null);   // ← single source-of-truth
+  const [config, setConfig] = useState(null);   
 
-  // Load once at startup
+
   useEffect(() => {
     axios.get('/api/config').then(res => setConfig(res.data));
   }, []);
 
-  // Callback passed to ConfigForm
   const handleConfigSave = saved => setConfig(saved);
 
   if (!config) return <p>Loading…</p>;
