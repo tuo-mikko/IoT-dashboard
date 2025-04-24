@@ -1,17 +1,11 @@
 {
-    "name": "iot-vertical-farm",
+    "name": "iot-dashboard",
     "private": true,
-    "workspaces": [
-        "packages/backend",
-        "packages/frontend"
-    ],
     "scripts": {
-        "dev": "concurrently \"npm:serve-back\" \"npm:serve-front\"",
-        "serve-back": "npm --prefix packages/backend run dev",
-        "serve-front": "npm --prefix packages/frontend start",
-        "heroku-postbuild": "npm --prefix packages/frontend install && npm --prefix packages/frontend run build"
+      "start": "node packages/backend/src/index.js",
+      "heroku-postbuild": "npm install --prefix packages/frontend && npm run build --prefix packages/frontend"
     },
-    "devDependencies": {
-        "concurrently": "^8.2.2"
+    "engines": {
+      "node": "18.x"
     }
-}
+  }
