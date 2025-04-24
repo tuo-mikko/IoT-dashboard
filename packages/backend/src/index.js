@@ -1,4 +1,3 @@
-
 const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config();
@@ -30,7 +29,6 @@ app.use('/api/config',     configRouter);
 const path = require('path');
 
 const buildPath = path.join(process.cwd(), 'packages', 'frontend', 'build');
-console.log('Serving React build from:', buildPath);
 
 app.use(express.static(buildPath));
 

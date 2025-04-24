@@ -23,6 +23,31 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/actions', async (req, res) => {
+  const limit = parseInt(req.query.limit) || 10;
+  try {
+    const readings = await Reading.find({ actions: { $exists: true, $ne: [] } })
+      .sort({ timestamp: -1 })
+      .limit(limit);
+
+    // Flatten actions array
+    const actionsList = readings.flatMap(r =>
+      r.actions.map(a => ({
+        readingTimestamp: r.timestamp,
+        actionTimestamp: a.timestamp,
+        actions: a.actions
+      }))
+    )
+    .sort((a, b) => new Date(b.actionTimestamp) - new Date(a.actionTimestamp))
+    .slice(0, limit); // keep only latest N flattened actions
+
+    res.json(actionsList);
+  } catch (err) {
+    console.error('Error fetching actions:', err);
+    res.status(500).json({ error: 'Failed to fetch actions' });
+  }
+});
+
 // GET /api/readings/latest
 router.get('/latest', async (req, res) => {
   try {

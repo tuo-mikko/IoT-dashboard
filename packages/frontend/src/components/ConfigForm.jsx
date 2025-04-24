@@ -58,14 +58,12 @@ export default function ConfigForm({ config, onSave }) {
       );
   };
 
-  /* ---------------------------------------------------- render */
   const r = localCfg.acceptable_ranges;
 
   return (
     <form onSubmit={handleSubmit} style={{ maxWidth: 620, margin: '2rem auto' }}>
-      <h2>Gateway Configuration</h2>
+      <h2>Farm Configuration</h2>
 
-      {/* ─────────── intervals ─────────── */}
       <fieldset>
         <legend>Intervals</legend>
 

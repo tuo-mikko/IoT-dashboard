@@ -1,11 +1,11 @@
+// routes/telemetry.js
 const express = require('express');
-const router = express.Router();
+const router  = express.Router();
 const Reading = require('../models/Reading');
-const Config = require('../models/Config');
+const Config  = require('../models/Config');
 
-// POST /api/telemetry/data
 router.post('/data', async (req, res) => {
-  const { timestamp, temperature, humidity, light, water } = req.body;
+  const { timestamp, temperature, humidity, light, water, actions } = req.body;
 
   try {
     const newReading = new Reading({
@@ -13,12 +13,17 @@ router.post('/data', async (req, res) => {
       temperature,
       humidity,
       light,
-      water
+      water,
+      actions: actions?.map(a => ({
+        timestamp: new Date(a.timestamp),
+        actions:   a.actions
+      }))
     });
     await newReading.save();
 
-    console.log(`Telemertry saved at ${timestamp}: Temp=${temperature}, Hum=${humidity}, Light=${light}, Water=${water}`);
+    console.log(`Telemetry saved: ${timestamp} | actions=${actions?.length || 0}`);
 
+    // check config update as usual
     const config = await Config.findOne().sort({ updatedAt: -1 });
     const needsUpdate = config ? config.updatedAt > Date.now() - 60000 : false;
 
@@ -26,7 +31,6 @@ router.post('/data', async (req, res) => {
       config_update: needsUpdate,
       ...(needsUpdate && { new_config: config })
     });
-
   } catch (error) {
     console.error('Error saving telemetry:', error);
     res.status(500).json({ error: 'Failed to save telemetry' });

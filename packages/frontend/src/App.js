@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import MetricChart from './components/MetricChart';
 import ConfigForm  from './components/ConfigForm';
+import RecentActions from './components/RecentActions';
 
 export default function App() {
   const [config, setConfig] = useState(null);   
@@ -20,6 +21,7 @@ export default function App() {
     <div style={{ padding: 20 }}>
       <h1>Vertical Farm Dashboard</h1>
       <MetricChart ranges={config.acceptable_ranges} />
+      <RecentActions />
       <ConfigForm config={config} onSave={handleConfigSave} />
     </div>
   );
