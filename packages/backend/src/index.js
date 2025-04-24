@@ -38,7 +38,7 @@ app.use('/api/config',     configRouter);
 
 const path = require('path');
 
-const buildPath = path.join(__dirname, '..', '..', 'frontend', 'build');
+const buildPath = path.join(process.cwd(), 'packages', 'frontend', 'build');
 
 app.use('/', express.static(buildPath));
 
