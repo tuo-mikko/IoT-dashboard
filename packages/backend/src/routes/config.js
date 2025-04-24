@@ -17,17 +17,19 @@ router.get('/', async (req, res) => {
 // PUT /api/config
 router.put('/', async (req, res) => {
   try {
-    const { acceptable_ranges, read_interval_ms } = req.body;
+    const { acceptable_ranges, read_interval_ms, decision_interval_s, telemetry_interval_s} = req.body;
     const update = {};
     if (acceptable_ranges) update.acceptable_ranges = acceptable_ranges;
     if (read_interval_ms)    update.read_interval_ms = read_interval_ms;
+    if (decision_interval_s) update.decision_interval_s = decision_interval_s;
+    if (telemetry_interval_s)    update.telemetry_interval_s = telemetry_interval_s;
 
     const config = await Config.findOneAndUpdate(
       {},
       { ...update, updatedAt: new Date() },
       { new: true, upsert: true }
     );
-    console.log('✔ Config updated:', config);
+    console.log('Config updated:', config);
     res.json(config);
   } catch (err) {
     console.error('Error updating config:', err);

@@ -3,9 +3,12 @@ content-type: application/json
 
 {
   "acceptable_ranges": {
-    "temperature": { "min": 21.0, "max": 28.0 },
-    "humidity":    { "min": 55.0, "max": 65.0 },
+    "temperature": { "min": 23.0, "max": 26.0 },
+    "humidity":    { "min": 48.0, "max": 55.0 },
+    "light":        {"min":250.0, "max":350.0},
     "water":       { "dry": 1,    "wet": 0    }
   },
-  "read_interval_ms": 5000
+  "read_interval_ms": 5000,
+  "decision_interval_s": 10,
+  "telemetry_interval_s": 30
 }

@@ -2,9 +2,9 @@ POST http://localhost:3000/api/telemetry/data HTTP/1.1
 content-type: application/json
 
 {
-  "timestamp": "2025-04-23T12:55:56.789Z",
-  "temperature": 24.9,
-  "humidity": 50.3,
-  "light": 54,
+  "timestamp": "2025-04-23T13:05:56.789Z",
+  "temperature": 26.9,
+  "humidity": 52.3,
+  "light": 50,
   "water": 0
 }
