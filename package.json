@@ -3,7 +3,10 @@
     "private": true,
     "scripts": {
         "heroku-postbuild": "npm install --prefix packages/backend && npm install --prefix packages/frontend && npm run build --prefix packages/frontend",
-        "start": "node packages/backend/src/index.js"},
+        "start": "node packages/backend/src/index.js",
+        "dev": "concurrently \"npm:serve-back\" \"npm:serve-front\"",
+        "serve-back": "npm --prefix packages/backend run dev",
+        "serve-front": "npm --prefix packages/frontend start"},
     "engines": {
       "node": "18.x"
     }

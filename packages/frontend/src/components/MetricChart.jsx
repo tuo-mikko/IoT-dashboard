@@ -2,75 +2,75 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
-  LineChart,
-  Line,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceArea
+  LineChart, Line, CartesianGrid, XAxis, YAxis,
+  Tooltip, ResponsiveContainer, ReferenceArea
 } from 'recharts';
 
+/* metric definitions */
 const METRICS = [
-  { key: 'temperature', label: 'Temperature (°C)', color: '#ef4444' },
-  { key: 'humidity',    label: 'Humidity (%)',    color: '#3b82f6' },
-  { key: 'light',       label: 'Light (ADC)',     color: '#f59e0b' }
+  { key: 'temperature', label: 'Temperature (°C)', color: '#ef4444' }, // red-500
+  { key: 'humidity',    label: 'Humidity (%)',     color: '#3b82f6' }, // blue-500
+  { key: 'light',       label: 'Light',            color: '#f59e0b' }  // amber-500
 ];
 
-export default function MetricChart() {
-  const [data, setData]     = useState([]);
-  const [ranges, setRanges] = useState({});
-  const [metric, setMetric] = useState('temperature');
-  const [status, setStatus] = useState('loading'); // loading | error | ready
+/* helper for formatting server readings */
+function fmt(rs) {
+  return rs.map(r => ({
+    time: new Date(r.timestamp).toLocaleTimeString(),
+    temperature: r.temperature,
+    humidity:    r.humidity,
+    light:       r.light
+  }));
+}
 
+export default function MetricChart({ ranges }) {
+  const [metric, setMetric] = useState('temperature');
+  const [data,   setData]   = useState([]);
+
+  /* initial load (last 50) */
   useEffect(() => {
-    (async () => {
-      try {
-        const [{ data: readings }, { data: cfg }] = await Promise.all([
-          axios.get('/api/readings?limit=50'),
-          axios.get('/api/config')
-        ]);
-        setRanges(cfg.acceptable_ranges || {});
-        setData(
-          readings.reverse().map(r => ({
-            time: new Date(r.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            temperature: r.temperature,
-            humidity:    r.humidity,
-            light:       r.light
-          }))
-        );
-        setStatus('ready');
-      } catch (err) {
-        console.error(err);
-        setStatus('error');
-      }
-    })();
+    axios.get('/api/readings?limit=50')
+      .then(res => setData(fmt(res.data)))
+      .catch(console.error);
   }, []);
 
-  if (status === 'loading') return <p>Loading…</p>;
-  if (status === 'error')   return <p style={{ color: 'red' }}>Failed to load data.</p>;
+  /* live polling every 5 s */
+  useEffect(() => {
+    const id = setInterval(() => {
+      axios.get('/api/readings?limit=1')
+        .then(res => {
+          const p = fmt(res.data)[0];
+          setData(d => {
+            if (!p || !d.length) return d;
+            return d[d.length - 1].time === p.time ? d : [...d.slice(-49), p];
+          });
+        })
+        .catch(() => {});
+    }, 5000);
+    return () => clearInterval(id);
+  }, []);
 
-  const meta = METRICS.find(m => m.key === metric);
-  const band = ranges[metric];
-  const hasBand = band && typeof band.min === 'number' && typeof band.max === 'number';
+  /* band + domain logic exactly as in the version you said worked */
+  const band     = ranges?.[metric];
+  const hasBand  = band && typeof band.min === 'number' && typeof band.max === 'number';
 
-  // Compute data extent
-  const values = data.map(d => d[metric]).filter(v => v != null);
-  const dataMin = Math.min(...values);
-  const dataMax = Math.max(...values);
+  const values   = data.map(d => d[metric]).filter(v => v != null);
+  const dataMin  = Math.min(...values);
+  const dataMax  = Math.max(...values);
 
-  // Determine domain: include both data and band, then pad by 10%
   let domain;
   if (hasBand && dataMin < Infinity) {
     const lower = Math.min(band.min, dataMin);
     const upper = Math.max(band.max, dataMax);
-    const pad = (upper - lower) * 0.1;
+    const pad   = (upper - lower) * 0.1;
     domain = [lower - pad, upper + pad];
   } else {
     domain = ['auto', 'auto'];
   }
 
+  const meta = METRICS.find(m => m.key === metric);
+
+  /* ------------------------------- render */
   return (
     <section className="space-y-4">
       <label className="space-x-2 font-medium">
@@ -108,6 +108,7 @@ export default function MetricChart() {
             stroke={meta.color}
             strokeWidth={2}
             dot={false}
+            isAnimationActive={false}
           />
         </LineChart>
       </ResponsiveContainer>
