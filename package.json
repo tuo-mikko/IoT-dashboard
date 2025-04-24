@@ -2,9 +2,8 @@
     "name": "iot-dashboard",
     "private": true,
     "scripts": {
-      "start": "node packages/backend/src/index.js",
-      "heroku-postbuild": "npm install --prefix packages/frontend && npm run build --prefix packages/frontend"
-    },
+        "heroku-postbuild": "npm install --prefix packages/backend && npm install --prefix packages/frontend && npm run build --prefix packages/frontend",
+        "start": "node packages/backend/src/index.js"},
     "engines": {
       "node": "18.x"
     }
