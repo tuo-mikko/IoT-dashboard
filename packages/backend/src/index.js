@@ -9,15 +9,6 @@ const configRouter    = require('./routes/config');
 
 const app = express();
 
-const originalUse = app.use.bind(app);
-
-app.use = function (routePath, ...rest) {
-  // Only log if first arg is a string (functions/static middle-ware skipped)
-  if (typeof routePath === 'string') console.log('Mounting:', routePath);
-  return originalUse(routePath, ...rest);
-};
-
-
 app.use(express.json());
 
 // Connect to Mongo
@@ -39,8 +30,9 @@ app.use('/api/config',     configRouter);
 const path = require('path');
 
 const buildPath = path.join(process.cwd(), 'packages', 'frontend', 'build');
+console.log('Serving React build from:', buildPath);
 
-app.use('/', express.static(buildPath));
+app.use(express.static(buildPath));
 
 app.get(/^\/(?!api).*/, (_req, res) => {
     res.sendFile(path.join(buildPath, 'index.html'));
