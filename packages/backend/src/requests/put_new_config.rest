@@ -1,0 +1,11 @@
+PUT http://localhost:3000/api/config/ HTTP/1.1
+content-type: application/json
+
+{
+  "acceptable_ranges": {
+    "temperature": { "min": 21.0, "max": 28.0 },
+    "humidity":    { "min": 55.0, "max": 65.0 },
+    "water":       { "dry": 1,    "wet": 0    }
+  },
+  "read_interval_ms": 5000
+}
